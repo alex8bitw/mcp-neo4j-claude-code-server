@@ -145,6 +145,27 @@ The `NEO4J_AUTH` variable must follow the format: `username/password`
 4. Restart Claude Code CLI completely
 5. Verify with `claude mcp list` - the neo4j server should appear with ✓ Connected status
 
+### Alternative: Manual Configuration
+
+If `claude mcp add` fails with parsing errors (especially with passwords containing `/`), manually edit `~/.claude.json`:
+
+```json
+"mcpServers": {
+  "neo4j": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
+    "env": {
+      "NEO4J_AUTH": "neo4j/neoneoneo",
+      "NEO4J_URI": "bolt://localhost:7687",
+      "NEO4J_DATABASE": "neo4j"
+    }
+  }
+}
+```
+
+After editing, verify with `claude mcp list`.
+
 ## Testing
 
 ### Quick Test with Local Neo4j
