@@ -109,21 +109,9 @@ echo "   NEO4J_AUTH: ${NEO4J_AUTH%%/*}/****"
 echo "   NEO4J_DATABASE: $NEO4J_DATABASE"
 echo ""
 
-# Detect OS and set config path
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    CONFIG_DIR="$HOME/.config/claude-code"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    CONFIG_DIR="$HOME/Library/Application Support/claude-code"
-elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-    CONFIG_DIR="$APPDATA/claude-code"
-else
-    echo "❌ Unsupported OS: $OSTYPE"
-    exit 1
-fi
-
-CONFIG_FILE="$CONFIG_DIR/mcp_settings.json"
-INSTALL_METHOD=""
+# Set paths
 SERVER_PATH="$(pwd)"
+INSTALL_METHOD=""
 
 # Check for nvm and npm
 if command -v nvm &> /dev/null || [ -s "$HOME/.nvm/nvm.sh" ]; then
@@ -184,92 +172,58 @@ else
     exit 1
 fi
 
-# Create config directory if it doesn't exist
-mkdir -p "$CONFIG_DIR"
-
-# Prepare config JSON based on install method
-if [ "$INSTALL_METHOD" == "npm" ]; then
-    MCP_CONFIG=$(cat <<EOF
-{
-  "command": "node",
-  "args": ["$SERVER_PATH/build/index.js"],
-  "env": {
-    "NEO4J_URI": "$NEO4J_URI",
-    "NEO4J_AUTH": "$NEO4J_AUTH",
-    "NEO4J_DATABASE": "$NEO4J_DATABASE"
-  }
-}
-EOF
-)
-else
-    MCP_CONFIG=$(cat <<EOF
-{
-  "command": "docker",
-  "args": ["run", "-i", "--rm", "--network=host", "-e", "NEO4J_URI=$NEO4J_URI", "-e", "NEO4J_AUTH=$NEO4J_AUTH", "-e", "NEO4J_DATABASE=$NEO4J_DATABASE", "mcp-neo4j-claude-code-server"],
-  "env": {}
-}
-EOF
-)
-fi
-
-# Update mcp_settings.json
+# Configure Claude Code MCP server
 echo "⚙️  Configuring Claude Code MCP settings..."
 
-if command -v jq &> /dev/null; then
-    # Use jq for JSON manipulation
-    if [ -f "$CONFIG_FILE" ]; then
-        cp "$CONFIG_FILE" "$CONFIG_FILE.backup"
-        echo "📋 Backed up existing config to $CONFIG_FILE.backup"
+# Check if claude CLI is available
+if ! command -v claude &> /dev/null; then
+    echo "❌ claude CLI not found. Please install Claude Code first."
+    echo "   Visit: https://claude.ai/download"
+    exit 1
+fi
 
-        jq --argjson neo4j "$MCP_CONFIG" '.mcpServers.neo4j = $neo4j' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
-    else
-        echo "{\"mcpServers\":{\"neo4j\":$MCP_CONFIG}}" | jq '.' > "$CONFIG_FILE"
-    fi
+# Remove existing neo4j server if present
+claude mcp remove neo4j -s user 2>/dev/null || true
 
-elif command -v node &> /dev/null; then
-    # Use Node.js for JSON manipulation
-    node -e "
-const fs = require('fs');
-const configPath = '$CONFIG_FILE';
-const neo4jConfig = $MCP_CONFIG;
-let config = {};
-
-try {
-    if (fs.existsSync(configPath)) {
-        config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        fs.writeFileSync(configPath + '.backup', JSON.stringify(config, null, 2));
-        console.log('📋 Backed up existing config to $CONFIG_FILE.backup');
-    }
-} catch (e) {
-    console.log('⚠️  Could not read existing config, creating new one');
-}
-
-if (!config.mcpServers) {
-    config.mcpServers = {};
-}
-
-config.mcpServers.neo4j = neo4jConfig;
-fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-"
+# Add MCP server based on install method
+if [ "$INSTALL_METHOD" == "npm" ]; then
+    claude mcp add -s user -t stdio neo4j \
+        -e NEO4J_URI="$NEO4J_URI" \
+        -e NEO4J_AUTH="$NEO4J_AUTH" \
+        -e NEO4J_DATABASE="$NEO4J_DATABASE" \
+        -- node "$SERVER_PATH/build/index.js"
 else
-    echo "❌ Neither jq nor node is available for JSON manipulation"
-    echo "📝 Please manually add this to $CONFIG_FILE:"
-    echo "{\"mcpServers\":{\"neo4j\":$MCP_CONFIG}}" | python -m json.tool 2>/dev/null || echo "$MCP_CONFIG"
+    claude mcp add -s user -t stdio neo4j \
+        -e NEO4J_URI="$NEO4J_URI" \
+        -e NEO4J_AUTH="$NEO4J_AUTH" \
+        -e NEO4J_DATABASE="$NEO4J_DATABASE" \
+        -- docker run -i --rm --network=host \
+        -e "NEO4J_URI=$NEO4J_URI" \
+        -e "NEO4J_AUTH=$NEO4J_AUTH" \
+        -e "NEO4J_DATABASE=$NEO4J_DATABASE" \
+        mcp-neo4j-claude-code-server
+fi
+
+if [ $? -ne 0 ]; then
+    echo "❌ Failed to configure MCP server"
     exit 1
 fi
 
 echo ""
 echo "✅ Installation complete!"
 echo ""
-echo "📍 Configuration file: $CONFIG_FILE"
+echo "📍 Configuration: User scope (available in all your projects)"
 echo "🔧 Install method: $INSTALL_METHOD"
 echo ""
 echo "🔄 Next steps:"
 echo "   1. Ensure Neo4j is running at $NEO4J_URI"
-echo "   2. Restart Claude Code CLI if it's currently running"
+echo "   2. Verify with: claude mcp list"
 echo "   3. Test with: 'Show me all nodes in the database'"
 echo ""
-echo "⚙️  To reconfigure Neo4j connection settings, you can:"
-echo "   • Run this installer again with --help to see all options"
-echo "   • Manually edit: $CONFIG_FILE"
+echo "⚙️  To manage the MCP server:"
+echo "   • View config: claude mcp get neo4j"
+echo "   • Remove: claude mcp remove neo4j -s user"
+echo "   • Reconfigure: Run this installer again with different options"
+echo ""
+echo "📝 Run '$0 --help' to see all configuration options"
 echo ""

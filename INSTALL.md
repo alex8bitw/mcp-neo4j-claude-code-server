@@ -29,33 +29,29 @@ This will compile TypeScript to JavaScript in the `build/` directory.
 
 ## Configuration
 
-### Locate your Claude Code configuration file
+### Configure Claude Code MCP Server
 
-The MCP settings file location varies by operating system:
+Add the Neo4j MCP server to your Claude Code user configuration using the `claude mcp add` command:
 
-- **Linux**: `~/.config/claude-code/mcp_settings.json`
-- **macOS**: `~/Library/Application Support/claude-code/mcp_settings.json`
-- **Windows**: `%APPDATA%\claude-code\mcp_settings.json`
-
-### Add Neo4j MCP server configuration
-
-Edit your `mcp_settings.json` file and add the neo4j server configuration:
-
-```json
-{
-  "mcpServers": {
-    "neo4j": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
-      "env": {
-        "NEO4J_AUTH": "neo4j/neoneoneo"
-      }
-    }
-  }
-}
+```bash
+cd /path/to/mcp-neo4j-claude-code-server
+claude mcp add -s user -t stdio neo4j \
+  -e NEO4J_URI=bolt://localhost:7687 \
+  -e NEO4J_AUTH=neo4j/neoneoneo \
+  -e NEO4J_DATABASE=neo4j \
+  -- node "$(pwd)/build/index.js"
 ```
 
-**Important**: Replace `/absolute/path/to/mcp-neo4j-claude-code-server` with the actual absolute path to your installation.
+This adds the MCP server to **user scope**, making it available across all your projects.
+
+**Verify the configuration:**
+```bash
+claude mcp list
+```
+
+You should see `neo4j` listed with ✓ Connected status.
+
+**Note**: The installer script (`./install.sh`) automates this entire process.
 
 ### Optional: Custom Neo4j configuration
 
@@ -112,7 +108,7 @@ The `NEO4J_AUTH` variable must follow the format: `username/password`
 
 **Cause**: The `NEO4J_AUTH` variable is not set in your MCP configuration.
 
-**Solution**: Add `NEO4J_AUTH` to the `env` section of your `mcp_settings.json` file.
+**Solution**: Add `NEO4J_AUTH` when configuring the MCP server with `claude mcp add -e NEO4J_AUTH=username/password`.
 
 ### Error: "NEO4J_AUTH must contain exactly one '/' separator"
 
@@ -143,10 +139,11 @@ The `NEO4J_AUTH` variable must follow the format: `username/password`
 **Cause**: Claude Code hasn't loaded the MCP server configuration.
 
 **Solution**:
-1. Verify the absolute path in `mcp_settings.json` is correct
-2. Ensure the build completed successfully (`ls build/index.js`)
-3. Restart Claude Code CLI completely
-4. Check Claude Code logs for startup errors
+1. Verify the server is configured: `claude mcp get neo4j`
+2. Ensure the build completed successfully: `ls build/index.js`
+3. Check the server path is correct: `claude mcp get neo4j` should show the correct absolute path
+4. Restart Claude Code CLI completely
+5. Verify with `claude mcp list` - the neo4j server should appear with ✓ Connected status
 
 ## Testing
 

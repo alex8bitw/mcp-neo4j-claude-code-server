@@ -62,7 +62,9 @@ The `Neo4jClient` class abstracts Neo4j driver operations:
 
 ### Configuration
 
-Environment variables (set in Claude Code's `mcp_settings.json`):
+The MCP server is configured in user scope using `claude mcp add` command.
+
+Environment variables:
 
 - `NEO4J_AUTH` (required): Format `username/password`, validated on startup
 - `NEO4J_URI` (optional): Defaults to `bolt://localhost:7687`

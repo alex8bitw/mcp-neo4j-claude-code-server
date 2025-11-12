@@ -10,23 +10,23 @@ See [INSTALL.md](INSTALL.md) for detailed installation and configuration instruc
 
 ### Basic Configuration
 
-Add this to your Claude Code MCP settings (`mcp_settings.json`):
+Add the Neo4j MCP server to your Claude Code user configuration (available in all projects):
 
-```json
-{
-  "mcpServers": {
-    "neo4j": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
-      "env": {
-        "NEO4J_AUTH": "neo4j/your-password"
-      }
-    }
-  }
-}
+```bash
+cd /path/to/mcp-neo4j-claude-code-server
+claude mcp add -s user -t stdio neo4j \
+  -e NEO4J_URI=bolt://localhost:7687 \
+  -e NEO4J_AUTH=neo4j/your-password \
+  -e NEO4J_DATABASE=neo4j \
+  -- node "$(pwd)/build/index.js"
 ```
 
-**Note**: Replace `/absolute/path/to/mcp-neo4j-claude-code-server` with the actual path to your installation.
+Verify it's configured:
+```bash
+claude mcp list
+```
+
+**Note**: The installer script (`./install.sh`) automates this process.
 
 ## Features
 
