@@ -1,36 +1,32 @@
-# MCP Neo4j Server
-[![smithery badge](https://smithery.ai/badge/@alanse/mcp-neo4j-server)](https://smithery.ai/server/@alanse/mcp-neo4j-server)
+# MCP Neo4j Server for Claude Code
 
-An MCP server that provides integration between Neo4j graph database and Claude Desktop, enabling graph database operations through natural language interactions.
+> **Note**: This version is specifically designed for Claude Code CLI. For Claude Desktop integration, please use version 0.2.0 or earlier.
 
-<a href="https://glama.ai/mcp/servers/qjpsxn4zlh"><img width="380" height="200" src="https://glama.ai/mcp/servers/qjpsxn4zlh/badge" alt="Neo4j Server MCP server" /></a>
+An MCP server that provides integration between Neo4j graph database and Claude Code CLI, enabling graph database operations through natural language interactions.
 
 ## Quick Start
 
-You can run this MCP server directly using npx:
+See [INSTALL.md](INSTALL.md) for detailed installation and configuration instructions.
 
-```bash
-npx @alanse/mcp-neo4j
-```
+### Basic Configuration
 
-Or add it to your Claude Desktop configuration:
+Add this to your Claude Code MCP settings (`mcp_settings.json`):
 
 ```json
 {
   "mcpServers": {
     "neo4j": {
-      "command": "npx",
-      "args": ["@alanse/mcp-neo4j-server"],
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
       "env": {
-        "NEO4J_URI": "bolt://localhost:7687",
-        "NEO4J_USERNAME": "neo4j",
-        "NEO4J_PASSWORD": "your-password",
-        "NEO4J_DATABASE": "neo4j"
+        "NEO4J_AUTH": "neo4j/your-password"
       }
     }
   }
 }
 ```
+
+**Note**: Replace `/absolute/path/to/mcp-neo4j-server` with the actual path to your installation.
 
 ## Features
 
@@ -59,17 +55,7 @@ This server now supports connecting to specific databases in Neo4j Enterprise Ed
 
 ## Installation
 
-### Installing via Smithery
-
-To install MCP Neo4j Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@alanse/mcp-neo4j-server):
-
-```bash
-npx -y @smithery/cli install @alanse/mcp-neo4j-server --client claude
-```
-
-### For Development
-
-1. Clone the repository:
+1. Clone or navigate to the repository:
 ```bash
 git clone https://github.com/da-okazaki/mcp-neo4j-server.git
 cd mcp-neo4j-server
@@ -85,14 +71,16 @@ npm install
 npm run build
 ```
 
+For detailed setup instructions, see [INSTALL.md](INSTALL.md).
+
 ## Configuration
 
 The server requires the following environment variables:
 
-- `NEO4J_URI`: Neo4j database URI (default: bolt://localhost:7687)
-- `NEO4J_USERNAME`: Neo4j username (default: neo4j)
-- `NEO4J_PASSWORD`: Neo4j password (required)
-- `NEO4J_DATABASE`: Neo4j database name (default: neo4j) - Use this to connect to a specific database in Neo4j Enterprise
+- `NEO4J_AUTH`: Username and password in format `username/password` **(required)**
+  - Example: `neo4j/neoneoneo`
+- `NEO4J_URI`: Neo4j database URI (default: `bolt://localhost:7687`)
+- `NEO4J_DATABASE`: Neo4j database name (default: `neo4j`) - Use this to connect to a specific database in Neo4j Enterprise
 
 ## Usage Examples
 
@@ -104,11 +92,16 @@ For Neo4j Enterprise users with multiple databases, you can specify which databa
 
 ```json
 {
-  "env": {
-    "NEO4J_URI": "bolt://localhost:7687",
-    "NEO4J_USERNAME": "neo4j",
-    "NEO4J_PASSWORD": "your-password",
-    "NEO4J_DATABASE": "myCustomDatabase"
+  "mcpServers": {
+    "neo4j": {
+      "command": "node",
+      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
+      "env": {
+        "NEO4J_AUTH": "neo4j/your-password",
+        "NEO4J_URI": "bolt://localhost:7687",
+        "NEO4J_DATABASE": "myCustomDatabase"
+      }
+    }
   }
 }
 ```

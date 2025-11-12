@@ -1,23 +1,39 @@
 #!/usr/bin/env node
 import { Neo4jServer } from './server.js';
 
-// 環境変数から設定を読み込む
-const neo4jPassword = process.env.NEO4J_PASSWORD;
+// Load configuration from environment variables
+// Parse NEO4J_AUTH (format: username/password)
+const neo4jAuth = process.env.NEO4J_AUTH;
 
-// パスワードが設定されていない場合はエラー
-if (!neo4jPassword) {
-  console.error('Error: NEO4J_PASSWORD environment variable is required');
+if (!neo4jAuth) {
+  console.error('Error: NEO4J_AUTH environment variable is required');
+  console.error('Format: username/password (e.g., NEO4J_AUTH=neo4j/neoneoneo)');
+  process.exit(1);
+}
+
+// Validate NEO4J_AUTH format
+const authParts = neo4jAuth.split('/');
+if (authParts.length !== 2) {
+  console.error('Error: NEO4J_AUTH must contain exactly one "/" separator');
+  console.error('Format: username/password (e.g., NEO4J_AUTH=neo4j/neoneoneo)');
+  process.exit(1);
+}
+
+const [username, password] = authParts;
+if (!username || !password) {
+  console.error('Error: Both username and password must be non-empty');
+  console.error('Format: username/password (e.g., NEO4J_AUTH=neo4j/neoneoneo)');
   process.exit(1);
 }
 
 const config = {
   uri: process.env.NEO4J_URI || 'bolt://localhost:7687',
-  username: process.env.NEO4J_USERNAME || 'neo4j',
-  password: neo4jPassword,
+  username,
+  password,
   database: process.env.NEO4J_DATABASE || 'neo4j',
 };
 
-// サーバーの起動
+// Start the server
 const server = new Neo4jServer(config);
 
 server.run().catch((error) => {
@@ -25,7 +41,7 @@ server.run().catch((error) => {
   process.exit(1);
 });
 
-// 終了時のクリーンアップ
+// Cleanup on termination
 process.on('SIGINT', async () => {
   try {
     await server.close();

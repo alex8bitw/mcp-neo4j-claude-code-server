@@ -1,7 +1,7 @@
 {
   "name": "@alanse/mcp-neo4j-server",
-  "version": "0.2.0",
-  "description": "Neo4j MCP server for integrating Neo4j graph database with Claude Desktop through natural language interactions",
+  "version": "0.3.0",
+  "description": "Neo4j MCP server for integrating Neo4j graph database with Claude Code CLI through natural language interactions",
   "type": "module",
   "bin": {
     "mcp-neo4j": "./build/index.js"
@@ -30,6 +30,8 @@
     "neo4j",
     "graph-database",
     "claude",
+    "claude-code",
+    "cli",
     "natural-language",
     "database"
   ],

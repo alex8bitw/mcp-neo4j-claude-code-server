@@ -52,8 +52,8 @@ export class Neo4jServer {
   constructor(config: Neo4jServerConfig) {
     this.server = new Server(
       {
-        name: 'mcp-neo4j-server',
-        version: '1.0.0',
+        name: 'mcp-neo4j-claude-code',
+        version: '0.3.0',
       },
       {
         capabilities: {
@@ -65,7 +65,7 @@ export class Neo4jServer {
     this.neo4j = new Neo4jClient(config.uri, config.username, config.password, config.database);
     this.setupToolHandlers();
 
-    // エラーハンドリング
+    // Error handling
     this.server.onerror = (error) => console.error('[MCP Error]', error);
     process.on('SIGINT', async () => {
       await this.close();
@@ -74,7 +74,7 @@ export class Neo4jServer {
   }
 
   private setupToolHandlers(): void {
-    // ツール一覧の定義
+    // Define tool list
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
         {
@@ -145,7 +145,7 @@ export class Neo4jServer {
       ],
     }));
 
-    // ツールの実行ハンドラー
+    // Tool execution handler
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       try {
         const { name, arguments: args } = request.params;
@@ -217,7 +217,7 @@ export class Neo4jServer {
   async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('Neo4j MCP server running on stdio');
+    console.error('Neo4j MCP server for Claude Code running on stdio');
   }
 
   async close(): Promise<void> {
