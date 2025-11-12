@@ -10,9 +10,9 @@ This guide walks you through installing and configuring the Neo4j MCP server for
 
 ## Installation
 
-1. Clone or navigate to the mcp-neo4j-server directory:
+1. Clone or navigate to the mcp-neo4j-claude-code-server directory:
 ```bash
-cd mcp-neo4j-server
+cd mcp-neo4j-claude-code-server
 ```
 
 2. Install dependencies:
@@ -46,7 +46,7 @@ Edit your `mcp_settings.json` file and add the neo4j server configuration:
   "mcpServers": {
     "neo4j": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
+      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
       "env": {
         "NEO4J_AUTH": "neo4j/neoneoneo"
       }
@@ -55,7 +55,7 @@ Edit your `mcp_settings.json` file and add the neo4j server configuration:
 }
 ```
 
-**Important**: Replace `/absolute/path/to/mcp-neo4j-server` with the actual absolute path to your installation.
+**Important**: Replace `/absolute/path/to/mcp-neo4j-claude-code-server` with the actual absolute path to your installation.
 
 ### Optional: Custom Neo4j configuration
 
@@ -66,7 +66,7 @@ If your Neo4j instance uses a different URI or database, add these environment v
   "mcpServers": {
     "neo4j": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
+      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
       "env": {
         "NEO4J_AUTH": "neo4j/neoneoneo",
         "NEO4J_URI": "bolt://localhost:7687",

@@ -1,5 +1,5 @@
 {
-  "name": "@alanse/mcp-neo4j-server",
+  "name": "@alex8bitw/mcp-neo4j-claude-code-server",
   "version": "0.3.0",
   "description": "Neo4j MCP server for integrating Neo4j graph database with Claude Code CLI through natural language interactions",
   "type": "module",
@@ -39,10 +39,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/da-okazaki/mcp-neo4j-server.git"
+    "url": "git+https://github.com/alex8bitw/mcp-neo4j-claude-code-server.git"
   },
   "bugs": {
-    "url": "https://github.com/da-okazaki/mcp-neo4j-server/issues"
+    "url": "https://github.com/alex8bitw/mcp-neo4j-claude-code-server/issues"
   },
-  "homepage": "https://github.com/da-okazaki/mcp-neo4j-server#readme"
+  "homepage": "https://github.com/alex8bitw/mcp-neo4j-claude-code-server#readme"
 }

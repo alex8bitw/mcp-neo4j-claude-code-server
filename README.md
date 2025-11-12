@@ -17,7 +17,7 @@ Add this to your Claude Code MCP settings (`mcp_settings.json`):
   "mcpServers": {
     "neo4j": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
+      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
       "env": {
         "NEO4J_AUTH": "neo4j/your-password"
       }
@@ -26,7 +26,7 @@ Add this to your Claude Code MCP settings (`mcp_settings.json`):
 }
 ```
 
-**Note**: Replace `/absolute/path/to/mcp-neo4j-server` with the actual path to your installation.
+**Note**: Replace `/absolute/path/to/mcp-neo4j-claude-code-server` with the actual path to your installation.
 
 ## Features
 
@@ -57,8 +57,8 @@ This server now supports connecting to specific databases in Neo4j Enterprise Ed
 
 1. Clone or navigate to the repository:
 ```bash
-git clone https://github.com/da-okazaki/mcp-neo4j-server.git
-cd mcp-neo4j-server
+git clone https://github.com/alex8bitw/mcp-neo4j-claude-code-server.git
+cd mcp-neo4j-claude-code-server
 ```
 
 2. Install dependencies:
@@ -95,7 +95,7 @@ For Neo4j Enterprise users with multiple databases, you can specify which databa
   "mcpServers": {
     "neo4j": {
       "command": "node",
-      "args": ["/absolute/path/to/mcp-neo4j-server/build/index.js"],
+      "args": ["/absolute/path/to/mcp-neo4j-claude-code-server/build/index.js"],
       "env": {
         "NEO4J_AUTH": "neo4j/your-password",
         "NEO4J_URI": "bolt://localhost:7687",
